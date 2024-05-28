@@ -1,16 +1,17 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto';
-import { DatabaseService } from '../../shared/database/database.service';
+import { LoginDto } from '../dto/login.dto';
+import { DatabaseService } from '../../../shared/database/database.service';
 import { PoolConnection } from 'mysql2/promise';
-import { AuthModel } from './auth.model';
-import { PasswordBcryptUtil } from '../../shared/password/password-bcrypt.util';
+import { PasswordBcryptUtil } from '../../common/password-bcrypt.util';
+import { OwnerModel } from '../owner.model';
 
 @Injectable()
-export class AuthLoginService {
+export class OwnerLoginService {
   private connection: PoolConnection;
+
   constructor(
     private databaseService: DatabaseService,
-    private authModel: AuthModel,
+    private ownerModel: OwnerModel,
     private passwordBcryptUtil: PasswordBcryptUtil,
   ) {}
 
@@ -20,44 +21,37 @@ export class AuthLoginService {
    * @param loginDto
    */
   async login(loginDto: LoginDto): Promise<{
-    ownerpkey: number;
-    ownerid: string;
-    ownerpassword: string;
-    storename: string;
-    storepkey: number;
+    resCode: string;
+    owner: any;
   }> {
     try {
       this.connection = await this.databaseService.getDBConnection();
       // 회원 조회
-      const owner = await this.authModel.getOwnerOne(this.connection, loginDto);
+      const ownerSet = await this.ownerModel.getOwnerOne(
+        this.connection,
+        loginDto,
+      );
 
-      if (owner.length !== 1) {
-        return null;
+      if (ownerSet.length === 0) {
+        return { resCode: '0002', owner: null };
       } else {
+        const owner = ownerSet[0];
+
         // 비밀번호 검증
         const pwdValid = await this.passwordBcryptUtil.pwValid(
-          loginDto.ownerpassword,
-          owner[0].ownerpassword,
+          loginDto.ownerPassword,
+          owner.ownerPassword,
         );
 
-        if (pwdValid === false) {
+        if (!pwdValid) {
           throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
-          // throw new Exception;
-          // throw new HttpException(
-          //   {
-          //     message: '비밀번호가 일치하지 않습니다.',
-          //     error: 'NOT_FOUND',
-          //   },
-          //   HttpStatus.NOT_FOUND,
-          // );
         } else {
-          return owner[0];
+          return { resCode: '0000', owner: owner };
         }
       }
     } catch (err) {
       throw err;
     } finally {
-      console.log(11111);
       this.connection.release();
     }
   }
@@ -70,7 +64,7 @@ export class AuthLoginService {
     try {
       this.connection = await this.databaseService.getDBConnection();
 
-      const owner = await this.authModel.getOwnerToken(this.connection, token);
+      const owner = await this.ownerModel.getOwnerToken(this.connection, token);
 
       return owner.length !== 1 ? null : owner[0];
     } catch (err) {

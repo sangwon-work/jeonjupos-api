@@ -4,6 +4,8 @@ import { MenuCategoryModule } from './menu-category/menu-category.module';
 import { OrderModule } from './order/order.module';
 import { PayModule } from './pay/pay.module';
 import { TablesModule } from './tables/tables.module';
+import { CommonModule } from './common/common.module';
+import { OwnerModule } from './owner/owner.module';
 
 /**
  * Feature Modules: 애플리케이션의 각 기능별로 모듈을 만듭니다.
@@ -12,11 +14,13 @@ import { TablesModule } from './tables/tables.module';
  */
 @Module({
   imports: [
+    OwnerModule,
     MenuModule,
     MenuCategoryModule,
     OrderModule,
     PayModule,
     TablesModule,
+    CommonModule,
   ],
 })
 export class FeatureModule {}

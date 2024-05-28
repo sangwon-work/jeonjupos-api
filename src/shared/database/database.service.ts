@@ -22,6 +22,7 @@ export class DatabaseService implements OnModuleInit {
       port: database.port,
       database: database.database,
       connectionLimit: database.connectionLimit,
+      charset: 'utf8mb4',
     });
 
     console.log(`✅ START CONNECTION 🚀 `);
