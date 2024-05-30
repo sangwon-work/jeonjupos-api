@@ -96,12 +96,12 @@ export class OwnerController {
         return this.responseUtil.response(res, 200, '0014', '', {});
       } else {
         // 토큰 재발급
-        const { accessToken, refreshToken } =
-          await this.jwtSignUtil.generateToken(owner, owner.ownerPkey);
+        // const { accessToken, refreshToken } =
+        //   await this.jwtSignUtil.generateToken(owner, owner.ownerPkey);
 
         return this.responseUtil.response(res, 200, '0000', '', {
-          accessToken: accessToken,
-          refreshToken: refreshToken,
+          // accessToken: accessToken,
+          // refreshToken: refreshToken,
           owner: {
             ownerpkey: owner.ownerPkey,
             ownerid: owner.ownerId,
