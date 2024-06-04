@@ -3,8 +3,8 @@ import { GetTablesDto } from './dto/get-tables.dto';
 import { ResponseUtil } from '../../shared/response/response.util';
 import { GetTableDto } from './dto/get-table.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { GetTableListService } from "./service/get-table-list.service";
-import { GetTableService } from "./service/get-table.service";
+import { GetTableListService } from './service/get-table-list.service';
+import { GetTableService } from './service/get-table.service';
 
 @Controller('table')
 export class TablesController {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../shared/database/database.service';
 import { GetTablesDto } from './dto/get-tables.dto';
 import { PoolConnection } from 'mysql2/promise';
-import { GetTableDto } from "./dto/get-table.dto";
+import { GetTableDto } from './dto/get-table.dto';
 
 @Injectable()
 export class TablesModel {
@@ -17,38 +17,36 @@ export class TablesModel {
     return await this.databaseService.dbQuery(
       connection,
       `
-          select space.spacepkey, space.spacenum, eatingyn, if(orderprice is null, 0, orderprice) orderprice
-          from space 
-          left join orderinfo on space.spacepkey=orderinfo.spacepkey
-          where space.storepkey=? and isactiveyn=true
-          order by spacenum asc
+          select tablePkey, storePkey, tableNo
+          from jeonjupos.table 
+          where storePkey=? and useYn='Y'
+          order by tableNo
         `,
-      [getTablesDto.storepkey],
+      [getTablesDto.storePkey],
     );
   }
 
   /**
    * 테이블 목록 조회에 필요한 주문내역 조회
    * @param connection
-   * @param spacepkey
+   * @param tableNo
+   * @param storePkey
    */
-  async getTablesOrderList(connection: PoolConnection, spacepkey: number) {
+  async getTablesOrderList(
+    connection: PoolConnection,
+    tableNo: number,
+    storePkey: number,
+  ) {
     return await this.databaseService.dbQuery(
       connection,
       `
-          select 
-            ordermenu.menuname menuname,
-            sum(if(cancelyn=true, -ordermenu.count, ordermenu.count)) count,
-            sum(if(cancelyn=true, -ordermenu.count * ordermenu.saleprice, ordermenu.count * ordermenu.saleprice)) saleprice
-          from orderinfo
-          join ordernumticket on orderinfo.orderinfopkey=ordernumticket.orderinfopkey
-          join ordermenu on ordernumticket.ordernumticketpkey=ordermenu.ordernumticketpkey
-          where orderinfo.spacepkey=?
-          group by ordermenu.menupkey, ordermenu.menuname
-          order by ordermenu.menupkey desc
-          limit 5;
-        `,
-      [spacepkey],
+        select orderInfo.orderInfoPkey, totalOrderAmount, menuName, count, salePrice
+        from orderInfo
+        join orderMenu on orderInfo.orderInfoPkey=orderMenu.orderInfoPkey
+        where orderInfo.tableNo=? and orderInfo.storePkey=? and paymentStatus='P'
+        order by orderMenuPkey
+      `,
+      [tableNo, storePkey],
     );
   }
 
