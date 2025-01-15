@@ -19,12 +19,13 @@ export class LoginFacadeService {
 
       if (managerset.length === 1) {
         const manager = managerset[0];
-        // 비밀번호 일치여부 체크
+        // TODO 비밀번호 일치여부 체크
 
         // token 발급
         const accesstoken: string =
           await this.jwtSignService.generateAccessToken({
             managerpkey: manager.managerpkey,
+            storepkey: manager.storepkey,
           });
 
         return { rescode: '0000', data: { accesstoken: accesstoken } };

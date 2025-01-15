@@ -13,7 +13,10 @@ export class JwtSignService {
     private readonly configService: ConfigService,
   ) {}
 
-  async generateAccessToken(payload: { managerpkey: number }): Promise<string> {
+  async generateAccessToken(payload: {
+    managerpkey: number;
+    storepkey: number;
+  }): Promise<string> {
     return await this.jwtService.signAsync(payload, {
       secret: this.configService.get<Configuration['jwt']>('jwt').secret,
       expiresIn: '90d',

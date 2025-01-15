@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ManagerModule } from './manager/manager.module';
+import { StoreTableModule } from './store-table/store-table.module';
 
 /**
  * Feature Modules: 애플리케이션의 각 기능별로 모듈을 만듭니다.
@@ -8,7 +9,8 @@ import { ManagerModule } from './manager/manager.module';
  */
 @Module({
   imports: [
-    ManagerModule
+    ManagerModule,
+    StoreTableModule
   ],
 })
 export class FeatureModule {}
