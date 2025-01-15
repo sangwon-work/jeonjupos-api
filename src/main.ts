@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import * as process from 'process';
+import { Logger } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
 import { VersioningType } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // CORS 활성화
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
@@ -48,6 +51,13 @@ async function bootstrap() {
     // defaultVersion: '3',
   });
 
-  await app.listen(process.env.PORT || 3000);
+  const configService = app.get(ConfigService);
+  const PORT = configService.get('SERVER_PORT');
+  await app.listen(PORT || 3000);
+
+  // 개발 환경에서 실행했을때 logger 찍기
+  if (configService.get('NODE_ENV') === 'development') {
+    Logger.log(`Application running on port ${PORT}, http://localhost:${PORT}`);
+  }
 }
 bootstrap();

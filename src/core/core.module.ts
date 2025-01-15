@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
-import { AwsModule } from './aws/aws.module';
 
 /**
  * Core Module: 애플리케이션의 공통적으로 사용되는 서비스, 컨트롤러, 프로바이더 등을 포함합니다.
@@ -8,6 +7,6 @@ import { AwsModule } from './aws/aws.module';
  * 'AuthModule', 'LoggerModule', 'ConfigModule' 등의 기본적인 모듈이 여기에 포함될 수 있습니다.
  */
 @Module({
-  imports: [AuthModule, AwsModule],
+  imports: [AuthModule],
 })
 export class CoreModule {}

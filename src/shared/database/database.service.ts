@@ -15,6 +15,7 @@ export class DatabaseService implements OnModuleInit {
     const database =
       this.configService.get<Configuration['database']>('database');
 
+    console.log(database);
     this.CP = mysql.createPool({
       host: database.host,
       user: database.user,
@@ -23,6 +24,8 @@ export class DatabaseService implements OnModuleInit {
       database: database.database,
       connectionLimit: database.connectionLimit,
       charset: 'utf8mb4',
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 10000,
     });
 
     console.log(`✅ START CONNECTION 🚀 `);
@@ -32,7 +35,11 @@ export class DatabaseService implements OnModuleInit {
    * connection 가져오기
    */
   async getDBConnection(): Promise<PoolConnection> {
-    return await this.CP.getConnection();
+    try {
+      return await this.CP.getConnection();
+    } catch (err) {
+      throw err;
+    }
   }
 
   /**

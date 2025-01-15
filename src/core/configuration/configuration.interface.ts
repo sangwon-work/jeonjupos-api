@@ -16,7 +16,7 @@ export interface Configuration {
     secret: string;
   };
 
-  awsconfig: {
+  awsConfig: {
     awsAccessKeyId: string;
     awsSecretAccessKey: string;
     s3Region: string;
