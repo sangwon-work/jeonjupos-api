@@ -15,8 +15,32 @@ export class StoreTableModel {
   async getInStoreTableList(connection: PoolConnection, storepkey: number) {
     return await this.databaseService.dbQuery(
       connection,
-      `select storetablepkey, tablenumber, diningyn from storetable where storepkey=? and tabletype='INSTORE' and useyn='Y'`,
+      `
+        select 
+            storetablepkey, tabletype, tablenumber, diningyn 
+        from storetable where storepkey=? and tabletype='INSTORE' and useyn='Y'`,
       [storepkey],
+    );
+  }
+
+  /**
+   * 테이블 상세 조회
+   * @param connection
+   * @param storepkey
+   * @param storetablepkey
+   */
+  async getStoreTable(
+    connection: PoolConnection,
+    storepkey: number,
+    storetablepkey: number,
+  ) {
+    return await this.databaseService.dbQuery(
+      connection,
+      `
+        select 
+            storetablepkey, tabletype, tablenumber, diningyn 
+        from storetable where storepkey=? and storetablepkey=? and useyn='Y'`,
+      [storepkey, storetablepkey],
     );
   }
 }
