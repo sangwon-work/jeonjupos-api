@@ -9,10 +9,6 @@ import { OrderModule } from './order/order.module';
  * 'UserModule', 'PostModule', CommentModule' 등의 모듈이 여기에 해당합니다.
  */
 @Module({
-  imports: [
-    ManagerModule,
-    StoreTableModule,
-    OrderModule,
-  ],
+  imports: [ManagerModule, StoreTableModule, OrderModule],
 })
 export class FeatureModule {}

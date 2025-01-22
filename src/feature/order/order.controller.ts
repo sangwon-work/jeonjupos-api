@@ -14,6 +14,8 @@ import { ResponseUtil } from '../../shared/response/response.util';
 import { AuthGuard } from '@nestjs/passport';
 import { GetOrderListDto } from './dto/get-order-list.dto';
 import { GetOrderInfoFacadeService } from './facade/get-order-info-facade.service';
+import { FirstOrderDto } from './dto/first-order.dto';
+import { ReOrderDto } from './dto/re-order.dto';
 
 @Controller('order')
 export class OrderController {
@@ -49,13 +51,39 @@ export class OrderController {
   }
 
   /**
-   * 주문
+   * 첫주문
    * @param req
    * @param res
+   * @param firstOrderDto
    */
-  @Post('')
+  @Post('/first')
   @UseGuards(AuthGuard('access'))
-  async createOrder(@Req() req: Request, @Res() res: Response) {
+  async firstOrder(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() firstOrderDto: FirstOrderDto,
+  ) {
+    try {
+      const { storepkey } = req['user'];
+      return this.responseUtil.response(res, 200, '0000', '', {});
+    } catch (err) {
+      return this.responseUtil.response(res, 500, '9999', '', {});
+    }
+  }
+
+  /**
+   * 재주문
+   * @param req
+   * @param res
+   * @param reOrderDto
+   */
+  @Post('/reorder')
+  @UseGuards(AuthGuard('access'))
+  async reOrder(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() reOrderDto: ReOrderDto,
+  ) {
     try {
       const { storepkey } = req['user'];
       return this.responseUtil.response(res, 200, '0000', '', {});

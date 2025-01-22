@@ -4,11 +4,11 @@ import { Injectable } from '@nestjs/common';
 export class ResponseUtil {
   private res: any;
   private statusCode: number;
-  private resCode: string;
+  private rescode: string;
   private message: string;
   private body: any;
 
-  messageUtil(resCode: string) {
+  messageUtil(rescode: string) {
     const message = {
       // status 200
       '0000': '성공',
@@ -42,29 +42,29 @@ export class ResponseUtil {
       '9999': '서버오류',
       '9998': 'DB 오류',
     };
-    return message[resCode];
+    return message[rescode];
   }
 
   response(
     res: Response,
     statusCode: number,
-    resCode: string,
+    rescode: string,
     message: string,
     body: object,
   ): Response {
     this.res = res;
     this.statusCode = statusCode;
-    this.resCode = resCode;
+    this.rescode = rescode;
     this.body = body;
     this.message =
       message === ''
-        ? this.messageUtil(resCode) !== undefined
-          ? this.messageUtil(resCode)
+        ? this.messageUtil(rescode) !== undefined
+          ? this.messageUtil(rescode)
           : ''
         : message;
 
     return this.res
       .status(this.statusCode)
-      .json({ resCode: this.resCode, message: this.message, body: this.body });
+      .json({ rescode: this.rescode, message: this.message, body: this.body });
   }
 }
