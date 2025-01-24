@@ -4,7 +4,7 @@ import { OrderModel } from '../order.model';
 import { PoolConnection } from 'mysql2/promise';
 
 @Injectable()
-export class GetOrderListService {
+export class GetOrderListByStoreTableService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly orderModel: OrderModel,

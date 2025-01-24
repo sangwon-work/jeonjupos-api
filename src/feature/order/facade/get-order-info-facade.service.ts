@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { GetOrderListDto } from '../dto/get-order-list.dto';
 import { GetStoreTablePkeyService } from '../../store-table/service/get-store-table-pkey.service';
-import { GetOrderListService } from '../service/get-order-list.service';
+import { GetOrderListByStoreTableService } from '../service/get-order-list-by-store-table.service';
 
 @Injectable()
 export class GetOrderInfoFacadeService {
   constructor(
     private readonly getStoreTablePkeyService: GetStoreTablePkeyService,
-    private readonly getOrderListService: GetOrderListService,
+    private readonly getOrderListService: GetOrderListByStoreTableService,
   ) {}
 
   async getOrderInfo(
