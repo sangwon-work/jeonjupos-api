@@ -23,7 +23,6 @@ export class StoreTableController {
   async getList(@Req() req: Request, @Res() res: Response) {
     try {
       const { storepkey } = req['user'];
-
       const { data } =
         await this.getStoreTableListFacadeService.getStoreTableList(storepkey);
       return this.responseUtil.response(res, 200, '0000', '', data);

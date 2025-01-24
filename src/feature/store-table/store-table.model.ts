@@ -43,4 +43,33 @@ export class StoreTableModel {
       [storepkey, storetablepkey],
     );
   }
+
+  /**
+   * 테이블 주문내역 조회
+   * @param connection
+   * @param storetablepkey
+   */
+  async getStoreTableOrderList(
+    connection: PoolConnection,
+    storetablepkey: number,
+  ) {
+    return await this.databaseService.dbQuery(
+      connection,
+      `
+        select 
+            oi.orderinfopkey,
+            oi.orderstatus,
+            oi.ordertype,
+            oi.address,
+            oi.regdate,
+            f.foodname,
+            f.saleprice,
+            f.ordercount
+        from orderinfo oi
+        join orderfood f on oi.orderinfopkey=f.orderinfopkey
+        where oi.storetablepkey=? and oi.orderstatus='DINING'
+      `,
+      [storetablepkey],
+    );
+  }
 }

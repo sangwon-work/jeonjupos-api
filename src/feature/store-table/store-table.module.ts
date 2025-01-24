@@ -4,6 +4,7 @@ import { StoreTableModel } from './store-table.model';
 import { GetStoreTableByInStoreService } from './service/get-store-table-by-in-store.service';
 import { GetStoreTableListFacadeService } from './facade/get-store-table-list-facade.service';
 import { GetStoreTablePkeyService } from './service/get-store-table-pkey.service';
+import { GetStoreTableOrderListService } from './service/get-store-table-order-list.service';
 
 @Module({
   controllers: [StoreTableController],
@@ -12,6 +13,7 @@ import { GetStoreTablePkeyService } from './service/get-store-table-pkey.service
     GetStoreTableByInStoreService,
     GetStoreTableListFacadeService,
     GetStoreTablePkeyService,
+    GetStoreTableOrderListService,
   ],
   exports: [GetStoreTablePkeyService],
 })
