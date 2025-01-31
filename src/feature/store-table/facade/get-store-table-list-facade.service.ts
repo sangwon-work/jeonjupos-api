@@ -26,10 +26,12 @@ export class GetStoreTableListFacadeService {
           );
 
         let totalorderprice = 0;
-        let regdate: string = '';
+        let regdate = '';
         const orderlist = orderset.map((order) => {
           totalorderprice += order.saleprice * order.ordercount;
-          regdate = order.regdate;
+          const orderregdate = new Date(order.regdate);
+          orderregdate.setHours(orderregdate.getHours() + 9);
+          regdate = `${orderregdate.getHours()}:${orderregdate.getMinutes()}:${orderregdate.getSeconds()}`;
           return {
             foodname: order.foodname,
             ordercount: order.ordercount,

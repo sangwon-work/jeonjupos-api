@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ManagerModule } from './manager/manager.module';
 import { StoreTableModule } from './store-table/store-table.module';
 import { OrderModule } from './order/order.module';
+import { FoodModule } from './food/food.module';
 
 /**
  * Feature Modules: 애플리케이션의 각 기능별로 모듈을 만듭니다.
@@ -9,6 +10,6 @@ import { OrderModule } from './order/order.module';
  * 'UserModule', 'PostModule', CommentModule' 등의 모듈이 여기에 해당합니다.
  */
 @Module({
-  imports: [ManagerModule, StoreTableModule, OrderModule],
+  imports: [ManagerModule, StoreTableModule, OrderModule, FoodModule],
 })
 export class FeatureModule {}

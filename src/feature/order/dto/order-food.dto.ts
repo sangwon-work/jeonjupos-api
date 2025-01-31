@@ -1,6 +1,10 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class OrderFoodDto {
+  @IsOptional()
+  @IsNumber()
+  orderfoodpkey: number = 0;
+
   @IsNotEmpty()
   @IsNumber()
   foodpkey: number;

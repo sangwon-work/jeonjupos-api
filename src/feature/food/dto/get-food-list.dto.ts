@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class GetOrderListDto {
+export class GetFoodListDto {
   @IsNotEmpty()
   @IsNumber()
-  orderinfopkey: number;
+  foodcategorypkey: number;
 }

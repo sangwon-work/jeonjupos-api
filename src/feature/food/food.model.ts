@@ -14,7 +14,7 @@ export class FoodModel {
   async getFoodCategoryList(connection: PoolConnection, storepkey: number) {
     return await this.databaseService.dbQuery(
       connection,
-      `select * from foodcategory where storepkey=? and useyn='Y' order by sort`,
+      `select foodcategorypkey, foodcategoryname from foodcategory where storepkey=? and useyn='Y' order by sort, foodcategorypkey`,
       [storepkey],
     );
   }
@@ -27,7 +27,7 @@ export class FoodModel {
   async getFoodList(connection: PoolConnection, foodcategorypkey: number) {
     return await this.databaseService.dbQuery(
       connection,
-      `select * from food where foodcategorypkey=? and showyn='Y' order by sort`,
+      `select foodpkey, foodname, saleprice, stock, soldoutyn from food where foodcategorypkey=? and showyn='Y' order by sort`,
       [foodcategorypkey],
     );
   }

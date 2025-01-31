@@ -4,7 +4,7 @@ import { OrderModel } from '../order.model';
 import { PoolConnection } from 'mysql2/promise';
 
 @Injectable()
-export class GetOrderListByStoreTableService {
+export class GetOrderInfoByPkeyService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly orderModel: OrderModel,
@@ -13,29 +13,19 @@ export class GetOrderListByStoreTableService {
   private connection: PoolConnection = undefined;
 
   /**
-   * 주문내역 조회
-   * @param storetablepkey
+   * 주문서 조회
+   * @param orderinfopkey
    */
-  async getOrderList(storetablepkey: number) {
+  async getOrder(orderinfopkey: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
       // 주문서 조회
-      const orderinfoset = await this.orderModel.getOrderInfoByStoreTable(
+      const orderinfoset = await this.orderModel.getOrderInfoByPkey(
         this.connection,
-        storetablepkey,
+        orderinfopkey,
       );
 
-      if (orderinfoset.length === 1) {
-        const orderinfo = orderinfoset[0];
-        // 주문 메뉴 목록 조회
-        orderinfo.orderfoodlist = await this.orderModel.getOrderFoodList(
-          this.connection,
-          orderinfo.orderinfopkey,
-        );
-        return { orderinfo: orderinfo };
-      } else {
-        return { orderinfo: null };
-      }
+      return { orderinfoset: orderinfoset };
     } catch (err) {
       throw err;
     } finally {

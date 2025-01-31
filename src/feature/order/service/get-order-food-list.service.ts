@@ -1,0 +1,47 @@
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '../../../shared/database/database.service';
+import { OrderModel } from '../order.model';
+import { PoolConnection } from 'mysql2/promise';
+
+@Injectable()
+export class GetOrderFoodListService {
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly orderModel: OrderModel,
+  ) {}
+
+  private connection: PoolConnection = undefined;
+
+  /**
+   * 주문 메뉴내역 조회
+   * @param orderinfopkey
+   */
+  async getList(orderinfopkey: number) {
+    try {
+      this.connection = await this.databaseService.getDBConnection();
+      const orderfoodlist = await this.orderModel.getOrderFoodList(
+        this.connection,
+        orderinfopkey,
+      );
+
+      let totalordercount = 0;
+      let totalprice = 0;
+      for (const orderfood of orderfoodlist) {
+        totalordercount += orderfood.ordercount;
+        totalprice += orderfood.saleprice * orderfood.ordercount;
+      }
+
+      return {
+        orderfoodlist: orderfoodlist,
+        totalordercount: totalordercount,
+        totalprice: totalprice,
+      };
+    } catch (err) {
+      throw err;
+    } finally {
+      if (this.connection !== undefined) {
+        this.connection.release();
+      }
+    }
+  }
+}
