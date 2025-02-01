@@ -21,6 +21,7 @@ export class FirstOrderFacadeService {
       if (storetableset.length === 1) {
         // 주문서 생성
         const { rescode } = await this.firstOrderService.createOrder(
+          storepkey,
           firstOrderDto,
         );
         return { rescode: rescode };

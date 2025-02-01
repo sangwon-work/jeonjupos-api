@@ -200,4 +200,50 @@ export class OrderModel {
       [diningyn, storetablepkey],
     );
   }
+
+  async createPayInfo(
+    connection: PoolConnection,
+    orderinfopkey: number,
+    storepkey: number,
+    tid: string,
+    orderprice: number,
+  ) {
+    return await this.databaseService.dbQuery(
+      connection,
+      `
+        insert into payinfo (
+          orderinfopkey, storepkey, tid,
+          paystatus, orderprice, cardprice,
+          cashprice, postpayprice, cardcancelableprice,
+          cashcancelableprice, postpaycancelableprice,
+          regdate
+        ) values (
+          ?, ?, ?,
+          'PENDING', ?, 0,
+          0, 0, 0,
+          0, 0,
+          now()
+        )
+      `,
+      [orderinfopkey, storepkey, tid, orderprice],
+    );
+  }
+
+  /**
+   * 결제정보 주문금액 수정
+   * @param connection
+   * @param orderinfopkey
+   * @param orderprice
+   */
+  async updatePayInfoOrderPrice(
+    connection: PoolConnection,
+    orderinfopkey: number,
+    orderprice: number,
+  ) {
+    return await this.databaseService.dbQuery(
+      connection,
+      `update payinfo set orderprice=? where orderinfopkey=?;`,
+      [orderprice, orderinfopkey],
+    );
+  }
 }

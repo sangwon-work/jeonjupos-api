@@ -18,6 +18,7 @@ export class ReOrderService {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();
 
+      let orderprice = 0;
       for (const orderfood of reOrderDto.orderfoodlist) {
         const foodset = await this.orderModel.getFood(
           this.connection,
@@ -27,6 +28,7 @@ export class ReOrderService {
         if (orderfood.orderfoodpkey !== 0) {
           // 주문메뉴 수량 변경
           if (orderfood.ordercount > 0) {
+            orderprice += food.saleprice * orderfood.ordercount;
             await this.orderModel.updateOrderFoodCount(
               this.connection,
               orderfood.orderfoodpkey,
@@ -42,6 +44,7 @@ export class ReOrderService {
         } else {
           // 주문메뉴 생성
           if (orderfood.ordercount > 0) {
+            orderprice += food.saleprice * orderfood.ordercount;
             await this.orderModel.createOrderFood(
               this.connection,
               reOrderDto.orderinfopkey,
@@ -51,6 +54,13 @@ export class ReOrderService {
           }
         }
       }
+
+      // 결제정보 주문금액 수정
+      await this.orderModel.updatePayInfoOrderPrice(
+        this.connection,
+        reOrderDto.orderinfopkey,
+        orderprice,
+      );
 
       await this.connection.commit();
       return { rescode: '0000' };

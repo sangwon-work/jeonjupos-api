@@ -13,7 +13,7 @@ export class FirstOrderService {
 
   private connection: PoolConnection = undefined;
 
-  async createOrder(firstOrderDto: FirstOrderDto) {
+  async createOrder(storepkey: number, firstOrderDto: FirstOrderDto) {
     try {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();
@@ -25,6 +25,8 @@ export class FirstOrderService {
         firstOrderDto.ordertype,
         '',
       );
+      const orderinfopkey: number = orderinfo.insertId;
+      let orderprice = 0;
 
       // 주문메뉴 생성
       for (const orderfood of firstOrderDto.orderfoodlist) {
@@ -34,10 +36,11 @@ export class FirstOrderService {
         );
         if (foodset.length === 1) {
           const food = foodset[0];
+          orderprice += food.saleprice * orderfood.ordercount;
           if (orderfood.ordercount > 0) {
             await this.orderModel.createOrderFood(
               this.connection,
-              orderinfo.insertId,
+              orderinfopkey,
               food,
               orderfood.ordercount,
             );
@@ -56,6 +59,15 @@ export class FirstOrderService {
         'Y',
       );
 
+      // 결제정보 저장
+      await this.orderModel.createPayInfo(
+        this.connection,
+        orderinfopkey,
+        storepkey,
+        this.generateRandomTid(),
+        orderprice,
+      );
+
       await this.connection.commit();
       return { rescode: '0000' };
     } catch (err) {
@@ -68,5 +80,45 @@ export class FirstOrderService {
         this.connection.release();
       }
     }
+  }
+
+  generateRandomTid(): string {
+    const alphabetarr = [
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H',
+      'I',
+      'J',
+      'K',
+      'L',
+      'M',
+      'N',
+      'O',
+      'P',
+      'Q',
+      'R',
+      'S',
+      'T',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
+      'Z',
+    ];
+    // 주문번호 생성
+    const now: number = Date.now();
+    const nowhex: string = now.toString(16).toUpperCase();
+
+    let str = '';
+    for (let i = 0; i < 4; i++) {
+      str += alphabetarr[Math.floor(Math.random() * 26)];
+    }
+    return `${str}${nowhex}`;
   }
 }
