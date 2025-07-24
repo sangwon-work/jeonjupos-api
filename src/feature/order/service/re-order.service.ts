@@ -11,17 +11,17 @@ export class ReOrderService {
     private readonly orderModel: OrderModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   async reOrder(reOrderDto: ReOrderDto) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
-      await this.connection.beginTransaction();
+      connection = await this.databaseService.getDBConnection();
+      await connection.beginTransaction();
 
       let orderprice = 0;
       for (const orderfood of reOrderDto.orderfoodlist) {
         const foodset = await this.orderModel.getFood(
-          this.connection,
+          connection,
           orderfood.foodpkey,
         );
         const food = foodset[0];
@@ -30,14 +30,14 @@ export class ReOrderService {
           if (orderfood.ordercount > 0) {
             orderprice += food.saleprice * orderfood.ordercount;
             await this.orderModel.updateOrderFoodCount(
-              this.connection,
+              connection,
               orderfood.orderfoodpkey,
               orderfood.ordercount,
             );
           } else {
             // 주문메뉴 삭제
             await this.orderModel.deleteOrderFood(
-              this.connection,
+              connection,
               orderfood.orderfoodpkey,
             );
           }
@@ -46,7 +46,7 @@ export class ReOrderService {
           if (orderfood.ordercount > 0) {
             orderprice += food.saleprice * orderfood.ordercount;
             await this.orderModel.createOrderFood(
-              this.connection,
+              connection,
               reOrderDto.orderinfopkey,
               food,
               orderfood.ordercount,
@@ -57,22 +57,18 @@ export class ReOrderService {
 
       // 결제정보 주문금액 수정
       await this.orderModel.updatePayInfoOrderPrice(
-        this.connection,
+        connection,
         reOrderDto.orderinfopkey,
         orderprice,
       );
 
-      await this.connection.commit();
+      await connection.commit();
       return { rescode: '0000' };
     } catch (err) {
-      if (this.connection !== undefined) {
-        await this.connection.rollback();
-      }
+      await connection?.rollback();
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

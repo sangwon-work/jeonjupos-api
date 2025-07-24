@@ -10,18 +10,18 @@ export class GetFoodListService {
     private readonly foodModel: FoodModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   /**
    * 메뉴 목록 조회
    * @param foodcategorypkey
    */
   async getList(foodcategorypkey: number) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
 
       const foodset = await this.foodModel.getFoodList(
-        this.connection,
+        connection,
         foodcategorypkey,
       );
 
@@ -29,9 +29,7 @@ export class GetFoodListService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

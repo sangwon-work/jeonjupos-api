@@ -10,17 +10,17 @@ export class GetOrderFoodListService {
     private readonly orderModel: OrderModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   /**
    * 주문 메뉴내역 조회
    * @param orderinfopkey
    */
   async getList(orderinfopkey: number) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
       const orderfoodlist = await this.orderModel.getOrderFoodList(
-        this.connection,
+        connection,
         orderinfopkey,
       );
 
@@ -39,9 +39,7 @@ export class GetOrderFoodListService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

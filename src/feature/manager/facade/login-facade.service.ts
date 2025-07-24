@@ -16,7 +16,7 @@ export class LoginFacadeService {
       const { managerset } = await this.getManagerByMidService.getManager(
         loginDto.mid,
       );
-
+      console.log(managerset);
       if (managerset.length === 1) {
         const manager = managerset[0];
         // TODO 비밀번호 일치여부 체크

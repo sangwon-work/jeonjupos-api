@@ -28,7 +28,7 @@ export class GetOrderInfoFacadeService {
           const { orderinfo } =
             await this.getOrderInfoByStoreTableService.getOrder(
               storetable.storetablepkey,
-            ); // 주문내역 조회
+            ); // 주문서 조회
           return { rescode: '0000', data: { orderinfo: orderinfo } };
         } else {
           // 공석 테이블 주문내역 없음

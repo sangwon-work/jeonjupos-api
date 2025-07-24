@@ -10,14 +10,14 @@ export class GetManagerByMidService {
     private readonly managerModel: ManagerModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   async getManager(mid: string) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
 
       const managerset = await this.managerModel.getManagerByMid(
-        this.connection,
+        connection,
         mid,
       );
 
@@ -25,9 +25,7 @@ export class GetManagerByMidService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

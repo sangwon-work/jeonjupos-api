@@ -10,18 +10,18 @@ export class GetPayInfoService {
     private readonly paymentModel: PaymentModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   /**
    * 주문서 조회
    * @param orderinfopkey
    */
   async getPayInfo(orderinfopkey: number) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
 
       const payinfoset = await this.paymentModel.getPayInfo(
-        this.connection,
+        connection,
         orderinfopkey,
       );
 
@@ -29,9 +29,7 @@ export class GetPayInfoService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

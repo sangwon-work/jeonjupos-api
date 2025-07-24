@@ -11,16 +11,16 @@ export class FirstOrderService {
     private readonly orderModel: OrderModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   async createOrder(storepkey: number, firstOrderDto: FirstOrderDto) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
-      await this.connection.beginTransaction();
+      connection = await this.databaseService.getDBConnection();
+      await connection.beginTransaction();
 
       // 주문서 생성
       const orderinfo = await this.orderModel.createOrderInfo(
-        this.connection,
+        connection,
         firstOrderDto.storetablepkey,
         firstOrderDto.ordertype,
         '',
@@ -31,7 +31,7 @@ export class FirstOrderService {
       // 주문메뉴 생성
       for (const orderfood of firstOrderDto.orderfoodlist) {
         const foodset = await this.orderModel.getFood(
-          this.connection,
+          connection,
           orderfood.foodpkey,
         );
         if (foodset.length === 1) {
@@ -39,7 +39,7 @@ export class FirstOrderService {
           orderprice += food.saleprice * orderfood.ordercount;
           if (orderfood.ordercount > 0) {
             await this.orderModel.createOrderFood(
-              this.connection,
+              connection,
               orderinfopkey,
               food,
               orderfood.ordercount,
@@ -47,38 +47,34 @@ export class FirstOrderService {
           }
         } else {
           // 메뉴를 찾을 수 없습니다.
-          await this.connection.rollback();
+          await connection.rollback();
           return { rescode: '0003' };
         }
       }
 
       // 테이블 식사중으로 변경
       await this.orderModel.updateStoreTableDining(
-        this.connection,
+        connection,
         firstOrderDto.storetablepkey,
         'Y',
       );
 
       // 결제정보 저장
       await this.orderModel.createPayInfo(
-        this.connection,
+        connection,
         orderinfopkey,
         storepkey,
         this.generateRandomTid(),
         orderprice,
       );
 
-      await this.connection.commit();
+      await connection.commit();
       return { rescode: '0000' };
     } catch (err) {
-      if (this.connection !== undefined) {
-        await this.connection.rollback();
-      }
+      await connection?.rollback();
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 

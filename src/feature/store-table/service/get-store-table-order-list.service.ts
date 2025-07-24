@@ -10,18 +10,18 @@ export class GetStoreTableOrderListService {
     private readonly storeTableModel: StoreTableModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   /**
    * 테이블 주문내역 조회
    * @param storetablepkey
    */
   async getOrderList(storetablepkey: number) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
 
       const orderset = await this.storeTableModel.getStoreTableOrderList(
-        this.connection,
+        connection,
         storetablepkey,
       );
 
@@ -29,9 +29,7 @@ export class GetStoreTableOrderListService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

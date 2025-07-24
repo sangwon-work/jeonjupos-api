@@ -10,19 +10,19 @@ export class GetStoreTablePkeyService {
     private readonly storeTableModel: StoreTableModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   /**
    * 매장 테이블 상세 조회
    * @param storepkey
    * @param storetablepkey
    */
   async getStoreTable(storepkey: number, storetablepkey: number) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
 
       const storetableset = await this.storeTableModel.getStoreTable(
-        this.connection,
+        connection,
         storepkey,
         storetablepkey,
       );
@@ -31,9 +31,7 @@ export class GetStoreTablePkeyService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

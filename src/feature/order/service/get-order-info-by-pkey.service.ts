@@ -10,18 +10,18 @@ export class GetOrderInfoByPkeyService {
     private readonly orderModel: OrderModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   /**
    * 주문서 조회
    * @param orderinfopkey
    */
   async getOrder(orderinfopkey: number) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
       // 주문서 조회
       const orderinfoset = await this.orderModel.getOrderInfoByPkey(
-        this.connection,
+        connection,
         orderinfopkey,
       );
 
@@ -29,9 +29,7 @@ export class GetOrderInfoByPkeyService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

@@ -10,19 +10,19 @@ export class GetStoreTableByInStoreService {
     private readonly storeTableModel: StoreTableModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   /**
    * 매장별
    * 매장식사 전용 테이블 목록 조회
    * @param storepkey
    */
   async getStoreTableList(storepkey: number) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
 
       const storetableset = await this.storeTableModel.getInStoreTableList(
-        this.connection,
+        connection,
         storepkey,
       );
 
@@ -30,9 +30,7 @@ export class GetStoreTableByInStoreService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }

@@ -10,18 +10,18 @@ export class GetOrderInfoByStoreTableService {
     private readonly orderModel: OrderModel,
   ) {}
 
-  private connection: PoolConnection = undefined;
-
   /**
    * 주문내역 조회
    * @param storetablepkey
    */
   async getOrder(storetablepkey: number) {
+    let connection: PoolConnection | null = null;
+
     try {
-      this.connection = await this.databaseService.getDBConnection();
+      connection = await this.databaseService.getDBConnection();
       // 주문서 조회
       const orderinfoset = await this.orderModel.getOrderInfoByStoreTable(
-        this.connection,
+        connection,
         storetablepkey,
       );
 
@@ -34,9 +34,7 @@ export class GetOrderInfoByStoreTableService {
     } catch (err) {
       throw err;
     } finally {
-      if (this.connection !== undefined) {
-        this.connection.release();
-      }
+      connection?.release();
     }
   }
 }
