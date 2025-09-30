@@ -14,7 +14,15 @@ export class ManagerModel {
   async getManagerByMid(connection: PoolConnection, mid: string) {
     return await this.databaseService.dbQuery(
       connection,
-      `select * from manager where mid=?;`,
+      `
+        select 
+          managerpkey,
+          storepkey,
+          mid,
+          mpassword
+        from manager 
+        where mid=?;
+      `,
       [mid],
     );
   }
