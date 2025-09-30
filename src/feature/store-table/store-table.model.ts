@@ -17,8 +17,8 @@ export class StoreTableModel {
       connection,
       `
         select 
-            storetablepkey, tabletype, tablenumber, diningyn 
-        from storetable where storepkey=? and tabletype='INSTORE' and useyn='Y'`,
+            storetablepkey, label
+        from storetable where storepkey=? and useyn='Y'`,
       [storepkey],
     );
   }
@@ -38,7 +38,7 @@ export class StoreTableModel {
       connection,
       `
         select 
-            storetablepkey, tabletype, tablenumber, diningyn 
+            storetablepkey, label 
         from storetable where storepkey=? and storetablepkey=? and useyn='Y'`,
       [storepkey, storetablepkey],
     );
@@ -58,16 +58,14 @@ export class StoreTableModel {
       `
         select 
             oi.orderinfopkey,
-            oi.orderstatus,
-            oi.ordertype,
-            oi.address,
             oi.regdate,
             f.foodname,
             f.saleprice,
             f.ordercount
-        from orderinfo oi
+        from diningsession ds
+        join orderinfo oi on ds.diningsessionpkey=oi.diningsessionpkey
         join orderfood f on oi.orderinfopkey=f.orderinfopkey
-        where oi.storetablepkey=? and oi.orderstatus='DINING'
+        where ds.storetablepkey=? and ds.status='OPEN' and oi.servicetype='DINEIN'
       `,
       [storetablepkey],
     );
