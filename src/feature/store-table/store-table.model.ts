@@ -17,7 +17,7 @@ export class StoreTableModel {
       connection,
       `
         select 
-            storetablepkey, label
+            storetablepkey, label, colstart, colend, rowstart, rowend
         from storetable where storepkey=? and useyn='Y'`,
       [storepkey],
     );
