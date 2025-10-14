@@ -9,21 +9,29 @@ export class OrderModel {
   /**
    * 테이블 주문서 조회
    * @param connection
-   * @param storetablepkey
+   * @param diningsessionpkey
    */
   async getOrderInfoByStoreTable(
     connection: PoolConnection,
-    storetablepkey: number,
+    diningsessionpkey: number,
   ) {
     return await this.databaseService.dbQuery(
       connection,
       `
-        select 
-            orderinfopkey, orderstatus, ordertype, address, regdate
-        from orderinfo
-        where storetablepkey=? and orderstatus='DINING'
+        select
+          oi.orderinfopkey, 
+          orderstatus, 
+          servicetype, 
+          address, 
+          pi.orderprice,
+          pi.cardprice,
+          pi.cardprice + pi.cashprice + pi.postpayprice payprice,
+          oi.regdate
+        from orderinfo oi
+        join payinfo pi on oi.orderinfopkey=pi.orderinfopkey
+        where diningsessionpkey=? and orderstatus='DINING'
       `,
-      [storetablepkey],
+      [diningsessionpkey],
     );
   }
 
@@ -37,7 +45,7 @@ export class OrderModel {
       connection,
       `
         select 
-            orderinfopkey, orderstatus, ordertype, address, regdate
+            orderinfopkey, orderstatus, servicetype, address, regdate
         from orderinfo
         where orderinfopkey=?
       `,
@@ -72,22 +80,26 @@ export class OrderModel {
   /**
    * 주문서 생성
    * @param connection
-   * @param storetablepkey
+   * @param storepkey
+   * @param diningsessionpkey
+   * @param servicetype
    * @param ordertype
    * @param address
    */
   async createOrderInfo(
     connection: PoolConnection,
-    storetablepkey: number,
-    ordertype: 'INSTORE' | 'TAKEOUT' | 'DELIVERY',
+    storepkey: number,
+    diningsessionpkey: number | null,
+    servicetype: 'DINEIN' | 'TAKEOUT' | 'DELIVERY',
+    ordertype: 'PAID' | 'UNPAID' | 'DINING',
     address: string,
   ) {
     return await this.databaseService.dbQuery(
       connection,
       `
-        insert into orderinfo (storetablepkey, orderstatus, ordertype, address, regdate) values (?, 'DINING', ?, ?, now());
+        insert into orderinfo (storepkey, diningsessionpkey, orderstatus, servicetype, address, regdate) values (?, ?, ?, ?, ?, now());
       `,
-      [storetablepkey, ordertype, address],
+      [storepkey, diningsessionpkey, ordertype, servicetype, address],
     );
   }
 
@@ -183,24 +195,6 @@ export class OrderModel {
     );
   }
 
-  /**
-   * 테이블 식사여부 상태 변경
-   * @param connection
-   * @param storetablepkey
-   * @param diningyn
-   */
-  async updateStoreTableDining(
-    connection: PoolConnection,
-    storetablepkey: number,
-    diningyn: 'Y' | 'N',
-  ) {
-    return await this.databaseService.dbQuery(
-      connection,
-      `update storetable set diningyn=? where storetablepkey=?`,
-      [diningyn, storetablepkey],
-    );
-  }
-
   async createPayInfo(
     connection: PoolConnection,
     orderinfopkey: number,
@@ -244,6 +238,22 @@ export class OrderModel {
       connection,
       `update payinfo set orderprice=? where orderinfopkey=?;`,
       [orderprice, orderinfopkey],
+    );
+  }
+
+  /**
+   * 식사중인 식사 세션 상세 조회
+   * @param connection
+   * @param storetablepkey
+   */
+  async getOpenDiningSession(
+    connection: PoolConnection,
+    storetablepkey: number,
+  ) {
+    return await this.databaseService.dbQuery(
+      connection,
+      `select * from diningsession where storetablepkey=? and status='OPEN'`,
+      [storetablepkey],
     );
   }
 }

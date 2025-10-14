@@ -4,34 +4,26 @@ import { OrderModel } from '../order.model';
 import { PoolConnection } from 'mysql2/promise';
 
 @Injectable()
-export class GetOrderInfoByStoreTableService {
+export class GetOpenDiningSessionService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly orderModel: OrderModel,
   ) {}
 
-  /**
-   * 주문내역 조회
-   * @param diningsessionpkey
-   */
-  async getOrder(diningsessionpkey: number) {
+  async getDiningSession(storetablepkey: number) {
     let connection: PoolConnection | null = null;
 
     try {
       connection = await this.databaseService.getDBConnection();
-      // 주문서 조회
-      const orderinfoset = await this.orderModel.getOrderInfoByStoreTable(
+
+      const diningsessionset = await this.orderModel.getOpenDiningSession(
         connection,
-        diningsessionpkey,
+        storetablepkey,
       );
 
-      if (orderinfoset.length === 1) {
-        const orderinfo = orderinfoset[0];
-        return { orderinfo: orderinfo };
-      } else {
-        return { orderinfo: null };
-      }
+      return { diningsessionset: diningsessionset };
     } catch (err) {
+      await connection?.rollback();
       throw err;
     } finally {
       connection?.release();

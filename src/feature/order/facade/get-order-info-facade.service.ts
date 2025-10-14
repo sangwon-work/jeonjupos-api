@@ -3,12 +3,14 @@ import { GetOrderInfoDto } from '../dto/get-order-info.dto';
 import { GetStoreTablePkeyService } from '../../store-table/service/get-store-table-pkey.service';
 import { GetOrderInfoByStoreTableService } from '../service/get-order-info-by-store-table.service';
 import { StoreTableVo } from '../../store-table/vo/store-table.vo';
+import { GetOpenDiningSessionService } from '../service/get-dining-session.service';
 
 @Injectable()
 export class GetOrderInfoFacadeService {
   constructor(
     private readonly getStoreTablePkeyService: GetStoreTablePkeyService,
     private readonly getOrderInfoByStoreTableService: GetOrderInfoByStoreTableService,
+    private readonly getOpenDiningSessionService: GetOpenDiningSessionService,
   ) {}
 
   async getOrderInfo(
@@ -25,19 +27,25 @@ export class GetOrderInfoFacadeService {
       if (storetableset.length === 1) {
         const storetable: StoreTableVo = storetableset[0];
 
-        // TODO 식사 중 여부 체크
-        // if (storetable.diningyn === 'Y') {
-        //   // 식사중 테이블
-        //   const { orderinfo } =
-        //     await this.getOrderInfoByStoreTableService.getOrder(
-        //       storetable.storetablepkey,
-        //     ); // 주문서 조회
-        //   return { rescode: '0000', data: { orderinfo: orderinfo } };
-        // } else {
-        //   // 공석 테이블 주문내역 없음
-        //   return { rescode: '0000', data: { orderinfo: null } };
-        // }
-        return { rescode: '0000', data: { orderinfo: null } };
+        // 식사 중 여부 체크
+        const { diningsessionset } =
+          await this.getOpenDiningSessionService.getDiningSession(
+            storetable.storetablepkey,
+          );
+        if (diningsessionset.length === 1) {
+          // 식사중 테이블
+
+          // 주문서 조회
+          const { orderinfo } =
+            await this.getOrderInfoByStoreTableService.getOrder(
+              storetable.storetablepkey,
+            );
+
+          return { rescode: '0000', data: { orderinfo: orderinfo } };
+        } else {
+          // 공석 테이블 주문내역 없음
+          return { rescode: '0000', data: { orderinfo: null } };
+        }
       } else {
         // 테이블을 찾을 수 없습니다.
         return { rescode: '0002', data: { orderinfo: null } };

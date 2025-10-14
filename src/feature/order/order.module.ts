@@ -11,6 +11,7 @@ import { FirstOrderFacadeService } from './facade/first-order-facade.service';
 import { GetOrderInfoByPkeyService } from './service/get-order-info-by-pkey.service';
 import { ReOrderService } from './service/re-order.service';
 import { ReOrderFacadeService } from './facade/re-order-facade.service';
+import { GetOpenDiningSessionService } from './service/get-dining-session.service';
 
 @Module({
   imports: [StoreTableModule],
@@ -26,6 +27,7 @@ import { ReOrderFacadeService } from './facade/re-order-facade.service';
     GetOrderInfoByPkeyService,
     ReOrderService,
     ReOrderFacadeService,
+    GetOpenDiningSessionService,
   ],
 })
 export class OrderModule {}

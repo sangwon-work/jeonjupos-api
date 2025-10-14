@@ -21,8 +21,10 @@ export class FirstOrderService {
       // 주문서 생성
       const orderinfo = await this.orderModel.createOrderInfo(
         connection,
-        firstOrderDto.storetablepkey,
-        firstOrderDto.ordertype,
+        storepkey,
+        null,
+        'DINEIN',
+        'DINING',
         '',
       );
       const orderinfopkey: number = orderinfo.insertId;
@@ -53,11 +55,6 @@ export class FirstOrderService {
       }
 
       // 테이블 식사중으로 변경
-      await this.orderModel.updateStoreTableDining(
-        connection,
-        firstOrderDto.storetablepkey,
-        'Y',
-      );
 
       // 결제정보 저장
       await this.orderModel.createPayInfo(
