@@ -65,7 +65,7 @@ export class PaymentModel {
     if (paytype === 'CASH') {
       set += ` cashprice=cashprice+?, cashcancelableprice=cashcancelableprice+?`;
     } else if (paytype === 'CARD') {
-      set += ` cardprice=cardprice+?, cardcancelableprice=cashcancelableprice+?`;
+      set += ` cardprice=cardprice+?, cardcancelableprice=cardcancelableprice+?`;
     } else {
       set += ` postpayprice=postpayprice+?, postpaycancelableprice=postpaycancelableprice+?`;
     }
@@ -99,16 +99,16 @@ export class PaymentModel {
   /**
    * 매장 테이블 식사여부 변경
    * @param connection
-   * @param storetablepkey
+   * @param orderinfopkey
    */
   async updateStoreTableDining(
     connection: PoolConnection,
-    storetablepkey: number,
+    orderinfopkey: number,
   ) {
     return await this.databaseService.dbQuery(
       connection,
-      `update storetable set diningyn='N' where storetablepkey=?`,
-      [storetablepkey],
+      `update orderinfo oi join diningsession ds on oi.diningsessionpkey=ds.diningsessionpkey set ds.status='CLOSED' where oi.orderinfopkey=?`,
+      [orderinfopkey],
     );
   }
 }

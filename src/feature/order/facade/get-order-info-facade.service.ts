@@ -32,7 +32,6 @@ export class GetOrderInfoFacadeService {
           await this.getOpenDiningSessionService.getDiningSession(
             storetable.storetablepkey,
           );
-        console.log('111 : ', diningsessionset);
         if (diningsessionset.length === 1) {
           // 식사중 테이블
           const diningsession = diningsessionset[0];

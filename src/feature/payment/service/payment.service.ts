@@ -57,7 +57,7 @@ export class PaymentService {
         // 매장 테이블 식사여부 공석 상태로 변경
         await this.paymentModel.updateStoreTableDining(
           connection,
-          payinfo.storetablepkey,
+          payinfo.orderinfopkey,
         );
         await connection.commit();
         return { rescode: '0000' };
