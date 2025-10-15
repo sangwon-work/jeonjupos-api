@@ -256,4 +256,15 @@ export class OrderModel {
       [storetablepkey],
     );
   }
+
+  async createDiningSession(
+    connection: PoolConnection,
+    storetablepkey: number,
+  ) {
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into diningsession (storetablepkey, status, openedat, closedat) values (?, 'OPEN', now(), '0000-00-00 00:00:00');`,
+      [storetablepkey],
+    );
+  }
 }

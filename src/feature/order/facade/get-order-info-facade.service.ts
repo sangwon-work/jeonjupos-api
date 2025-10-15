@@ -32,13 +32,14 @@ export class GetOrderInfoFacadeService {
           await this.getOpenDiningSessionService.getDiningSession(
             storetable.storetablepkey,
           );
+        console.log('111 : ', diningsessionset);
         if (diningsessionset.length === 1) {
           // 식사중 테이블
-
+          const diningsession = diningsessionset[0];
           // 주문서 조회
           const { orderinfo } =
             await this.getOrderInfoByStoreTableService.getOrder(
-              storetable.storetablepkey,
+              diningsession.diningsessionpkey,
             );
 
           return { rescode: '0000', data: { orderinfo: orderinfo } };

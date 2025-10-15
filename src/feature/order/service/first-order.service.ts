@@ -11,18 +11,28 @@ export class FirstOrderService {
     private readonly orderModel: OrderModel,
   ) {}
 
-  async createOrder(storepkey: number, firstOrderDto: FirstOrderDto) {
+  async createOrder(
+    storepkey: number,
+    firstOrderDto: FirstOrderDto,
+    storetablepkey: number,
+  ) {
     let connection: PoolConnection | null = null;
 
     try {
       connection = await this.databaseService.getDBConnection();
       await connection.beginTransaction();
 
+      // 식사세션 추가
+      const diningsession = await this.orderModel.createDiningSession(
+        connection,
+        storetablepkey,
+      );
+
       // 주문서 생성
       const orderinfo = await this.orderModel.createOrderInfo(
         connection,
         storepkey,
-        null,
+        diningsession.insertId,
         'DINEIN',
         'DINING',
         '',

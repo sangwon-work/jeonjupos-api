@@ -16,8 +16,8 @@ export class FirstOrderDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(['INSTORE', 'TAKEOUT', 'DELIVERY'])
-  ordertype: 'INSTORE' | 'TAKEOUT' | 'DELIVERY';
+  @IsIn(['DINEIN', 'TAKEOUT', 'DELIVERY'])
+  servicetype: 'DINEIN' | 'TAKEOUT' | 'DELIVERY';
 
   @IsNotEmpty()
   @IsArray()

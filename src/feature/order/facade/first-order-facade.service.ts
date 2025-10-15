@@ -19,10 +19,12 @@ export class FirstOrderFacadeService {
         ); // 매장 테이블 조회
 
       if (storetableset.length === 1) {
+        const storetable = storetableset[0];
         // 주문서 생성
         const { rescode } = await this.firstOrderService.createOrder(
           storepkey,
           firstOrderDto,
+          storetable.storetablepkey,
         );
         return { rescode: rescode };
       } else {

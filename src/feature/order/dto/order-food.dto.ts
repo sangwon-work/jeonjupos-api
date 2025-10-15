@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 export class OrderFoodDto {
   @IsOptional()
   @IsNumber()
-  orderfoodpkey: number = 0;
+  orderfoodpkey = 0;
 
   @IsNotEmpty()
   @IsNumber()
