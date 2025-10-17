@@ -15,7 +15,9 @@ export class GetStoreTableListFacadeService {
    * 매장별 매장식사 테이블 조회
    * @param storepkey
    */
-  async getStoreTableList(storepkey: number) {
+  async getStoreTableList(
+    storepkey: number,
+  ): Promise<{ data: { storetableset: StoreTableListVo[] } }> {
     try {
       const { storetableset } =
         await this.getStoreTableByInStoreService.getStoreTableList(storepkey);

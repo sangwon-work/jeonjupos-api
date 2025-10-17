@@ -4,6 +4,7 @@ import { GetStoreTablePkeyService } from '../../store-table/service/get-store-ta
 import { GetOrderInfoByStoreTableService } from '../service/get-order-info-by-store-table.service';
 import { StoreTableVo } from '../../store-table/vo/store-table.vo';
 import { GetOpenDiningSessionService } from '../service/get-dining-session.service';
+import { OrderInfoVo } from '../vo/order-info.vo';
 
 @Injectable()
 export class GetOrderInfoFacadeService {
@@ -16,7 +17,7 @@ export class GetOrderInfoFacadeService {
   async getOrderInfo(
     storepkey: number,
     getOrderInfoDto: GetOrderInfoDto,
-  ): Promise<{ rescode: string; data: { orderinfo: null | any } }> {
+  ): Promise<{ rescode: string; data: { orderinfo: OrderInfoVo } }> {
     try {
       // 테이블 조회
       const { storetableset } =
