@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
 import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AllExceptionsFilter } from './core/filter/all-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -50,6 +51,8 @@ async function bootstrap() {
     type: VersioningType.URI,
     // defaultVersion: '3',
   });
+
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   const configService = app.get(ConfigService);
   const PORT = configService.get('SERVER_PORT');

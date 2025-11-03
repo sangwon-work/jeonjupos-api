@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../../shared/database/database.service';
+import { DatabaseService } from '../../../core/database/database.service';
 import { OrderModel } from '../order.model';
 import { PoolConnection } from 'mysql2/promise';
 import { ReOrderDto } from '../dto/re-order.dto';
@@ -11,7 +11,7 @@ export class ReOrderService {
     private readonly orderModel: OrderModel,
   ) {}
 
-  async reOrder(reOrderDto: ReOrderDto) {
+  async reOrder(reOrderDto: ReOrderDto): Promise<{ rescode: '0000' }> {
     let connection: PoolConnection | null = null;
 
     try {

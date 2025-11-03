@@ -9,15 +9,9 @@ export class GetOrderFoodListFacadeService {
   ) {}
 
   async getOrderList(getOrderListDto: GetOrderListDto) {
-    try {
-      const { orderfoodlist, totalordercount, totalprice } =
-        await this.getOrderFoodListService.getList(
-          getOrderListDto.orderinfopkey,
-        );
+    const { orderfoodlist, totalordercount, totalprice } =
+      await this.getOrderFoodListService.getList(getOrderListDto.orderinfopkey);
 
-      return { data: { orderfoodlist, totalordercount, totalprice } };
-    } catch (err) {
-      throw err;
-    }
+    return { data: { orderfoodlist, totalordercount, totalprice } };
   }
 }
