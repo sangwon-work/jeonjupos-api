@@ -9,8 +9,6 @@ import { sanitizeOrderBy, orderByToSql } from './offset-order.util';
 import { DatabaseService } from '../../core/database/database.service';
 import { PaginationModel } from './pagination.model';
 
-export const MYSQL_POOL = 'MYSQL_POOL';
-
 @Injectable()
 export class OffsetPaginationService {
   constructor(
@@ -71,6 +69,7 @@ export class OffsetPaginationService {
           params,
         );
         total = cntRows[0]?.cnt ?? 0;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         total_pages = Math.ceil(total! / limit);
       }
 
