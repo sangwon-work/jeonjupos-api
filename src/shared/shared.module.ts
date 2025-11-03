@@ -1,9 +1,8 @@
 import { Global, Module } from '@nestjs/common';
-import { DatabaseModule } from './database/database.module';
-import { ResponseModule } from './response/response.module';
 import { AwsModule } from './aws/aws.module';
 import { JwtUtilModule } from './jwt/jwt-util.module';
 import { PasswordModule } from './password/password.module';
+import { PaginationModule } from './pagination/pagination.module';
 
 /**
  * Shared Module: 여러 Feature 모듈에서 사용할 수 있는 서비스나 팩토리 등을 공유하기 위한 모듈입니다.
@@ -12,12 +11,6 @@ import { PasswordModule } from './password/password.module';
  */
 @Global()
 @Module({
-  imports: [
-    DatabaseModule,
-    ResponseModule,
-    AwsModule,
-    JwtUtilModule,
-    PasswordModule,
-  ],
+  imports: [AwsModule, JwtUtilModule, PasswordModule, PaginationModule],
 })
 export class SharedModule {}

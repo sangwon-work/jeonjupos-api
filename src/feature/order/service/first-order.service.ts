@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../../shared/database/database.service';
+import { DatabaseService } from '../../../core/database/database.service';
 import { OrderModel } from '../order.model';
 import { FirstOrderDto } from '../dto/first-order.dto';
 import { PoolConnection } from 'mysql2/promise';
@@ -15,7 +15,7 @@ export class FirstOrderService {
     storepkey: number,
     firstOrderDto: FirstOrderDto,
     storetablepkey: number,
-  ) {
+  ): Promise<{ rescode: '0000' | '0003' }> {
     let connection: PoolConnection | null = null;
 
     try {

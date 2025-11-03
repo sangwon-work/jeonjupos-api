@@ -7,14 +7,10 @@ export class GetFoodListFacadeService {
   constructor(private readonly getFoodListService: GetFoodListService) {}
 
   async getList(getFoodListDto: GetFoodListDto) {
-    try {
-      const { foodset } = await this.getFoodListService.getList(
-        getFoodListDto.foodcategorypkey,
-      );
+    const { foodset } = await this.getFoodListService.getList(
+      getFoodListDto.foodcategorypkey,
+    );
 
-      return { data: { foodlist: foodset } };
-    } catch (err) {
-      throw err;
-    }
+    return { data: { foodlist: foodset } };
   }
 }

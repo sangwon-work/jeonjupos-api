@@ -3,7 +3,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as mysql from 'mysql2/promise';
 import { ConfigService } from '@nestjs/config';
-import { Configuration } from '../../core/configuration/configuration.interface';
+import { Configuration } from '../configuration/configuration.interface';
 import { Pool, PoolConnection } from 'mysql2/promise';
 
 @Injectable()

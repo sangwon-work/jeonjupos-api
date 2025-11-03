@@ -9,8 +9,8 @@ import {
   Query,
   Body,
   UseGuards,
+  HttpCode,
 } from '@nestjs/common';
-import { ResponseUtil } from '../../shared/response/response.util';
 import { AuthGuard } from '@nestjs/passport';
 import { GetOrderInfoDto } from './dto/get-order-info.dto';
 import { GetOrderInfoFacadeService } from './facade/get-order-info-facade.service';
@@ -20,11 +20,11 @@ import { GetOrderListDto } from './dto/get-order-list.dto';
 import { GetOrderFoodListFacadeService } from './facade/get-order-food-list-facade.service';
 import { FirstOrderFacadeService } from './facade/first-order-facade.service';
 import { ReOrderFacadeService } from './facade/re-order-facade.service';
+import { respond } from '../../shared/utils/response/response';
 
 @Controller('order')
 export class OrderController {
   constructor(
-    private readonly responseUtil: ResponseUtil,
     private readonly getOrderInfoFacadeService: GetOrderInfoFacadeService,
     private readonly getOrderFoodListFacadeService: GetOrderFoodListFacadeService,
     private readonly firstOrderFacadeService: FirstOrderFacadeService,
@@ -44,17 +44,12 @@ export class OrderController {
     @Res() res: Response,
     @Query() getOrderInfoDto: GetOrderInfoDto,
   ) {
-    try {
-      const { storepkey } = req['user'];
-      const { rescode, data } =
-        await this.getOrderInfoFacadeService.getOrderInfo(
-          storepkey,
-          getOrderInfoDto,
-        );
-      return this.responseUtil.response(res, 200, rescode, '', data);
-    } catch (err) {
-      return this.responseUtil.response(res, 500, '9999', '', {});
-    }
+    const { storepkey } = req['user'];
+    const { rescode, data } = await this.getOrderInfoFacadeService.getOrderInfo(
+      storepkey,
+      getOrderInfoDto,
+    );
+    return respond(rescode, '', data);
   }
 
   /**
@@ -70,14 +65,10 @@ export class OrderController {
     @Res() res: Response,
     @Query() getOrderListDto: GetOrderListDto,
   ) {
-    try {
-      const { data } = await this.getOrderFoodListFacadeService.getOrderList(
-        getOrderListDto,
-      );
-      return this.responseUtil.response(res, 200, '0000', '', data);
-    } catch (err) {
-      return this.responseUtil.response(res, 500, '9999', '', {});
-    }
+    const { data } = await this.getOrderFoodListFacadeService.getOrderList(
+      getOrderListDto,
+    );
+    return respond('0000', '', data);
   }
 
   /**
@@ -87,43 +78,30 @@ export class OrderController {
    * @param firstOrderDto
    */
   @Post('/first')
+  @HttpCode(200)
   @UseGuards(AuthGuard('access'))
   async firstOrder(
     @Req() req: Request,
     @Res() res: Response,
     @Body() firstOrderDto: FirstOrderDto,
   ) {
-    try {
-      const { storepkey } = req['user'];
-      const { rescode } = await this.firstOrderFacadeService.firstOrder(
-        storepkey,
-        firstOrderDto,
-      );
-      return this.responseUtil.response(res, 200, rescode, '', {});
-    } catch (err) {
-      return this.responseUtil.response(res, 500, '9999', '', {});
-    }
+    const { storepkey } = req['user'];
+    const { rescode } = await this.firstOrderFacadeService.firstOrder(
+      storepkey,
+      firstOrderDto,
+    );
+    return respond(rescode, '', {});
   }
 
   /**
    * 재주문
-   * @param req
-   * @param res
    * @param reOrderDto
    */
   @Post('/re')
+  @HttpCode(200)
   @UseGuards(AuthGuard('access'))
-  async reOrder(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() reOrderDto: ReOrderDto,
-  ) {
-    try {
-      const { storepkey } = req['user'];
-      const { rescode } = await this.reOrderFacadeService.reOrder(reOrderDto);
-      return this.responseUtil.response(res, 200, rescode, '', {});
-    } catch (err) {
-      return this.responseUtil.response(res, 500, '9999', '', {});
-    }
+  async reOrder(@Body() reOrderDto: ReOrderDto) {
+    const { rescode } = await this.reOrderFacadeService.reOrder(reOrderDto);
+    return respond(rescode, '', {});
   }
 }

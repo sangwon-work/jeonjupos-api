@@ -17,42 +17,37 @@ export class GetOrderInfoFacadeService {
   async getOrderInfo(
     storepkey: number,
     getOrderInfoDto: GetOrderInfoDto,
-  ): Promise<{ rescode: string; data: { orderinfo: OrderInfoVo } }> {
-    try {
-      // 테이블 조회
-      const { storetableset } =
-        await this.getStoreTablePkeyService.getStoreTable(
-          storepkey,
-          getOrderInfoDto.storetablepkey,
+  ): Promise<{ rescode: '0000' | '0002'; data: { orderinfo: OrderInfoVo } }> {
+    // 테이블 조회
+    const { storetableset } = await this.getStoreTablePkeyService.getStoreTable(
+      storepkey,
+      getOrderInfoDto.storetablepkey,
+    );
+    if (storetableset.length === 1) {
+      const storetable: StoreTableVo = storetableset[0];
+
+      // 식사 중 여부 체크
+      const { diningsessionset } =
+        await this.getOpenDiningSessionService.getDiningSession(
+          storetable.storetablepkey,
         );
-      if (storetableset.length === 1) {
-        const storetable: StoreTableVo = storetableset[0];
-
-        // 식사 중 여부 체크
-        const { diningsessionset } =
-          await this.getOpenDiningSessionService.getDiningSession(
-            storetable.storetablepkey,
+      if (diningsessionset.length === 1) {
+        // 식사중 테이블
+        const diningsession = diningsessionset[0];
+        // 주문서 조회
+        const { orderinfo } =
+          await this.getOrderInfoByStoreTableService.getOrder(
+            diningsession.diningsessionpkey,
           );
-        if (diningsessionset.length === 1) {
-          // 식사중 테이블
-          const diningsession = diningsessionset[0];
-          // 주문서 조회
-          const { orderinfo } =
-            await this.getOrderInfoByStoreTableService.getOrder(
-              diningsession.diningsessionpkey,
-            );
 
-          return { rescode: '0000', data: { orderinfo: orderinfo } };
-        } else {
-          // 공석 테이블 주문내역 없음
-          return { rescode: '0000', data: { orderinfo: null } };
-        }
+        return { rescode: '0000', data: { orderinfo: orderinfo } };
       } else {
-        // 테이블을 찾을 수 없습니다.
-        return { rescode: '0002', data: { orderinfo: null } };
+        // 공석 테이블 주문내역 없음
+        return { rescode: '0000', data: { orderinfo: null } };
       }
-    } catch (err) {
-      throw err;
+    } else {
+      // 테이블을 찾을 수 없습니다.
+      return { rescode: '0002', data: { orderinfo: null } };
     }
   }
 }

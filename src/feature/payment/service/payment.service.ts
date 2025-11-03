@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../../shared/database/database.service';
+import { DatabaseService } from '../../../core/database/database.service';
 import { PaymentModel } from '../payment.model';
 import { PoolConnection } from 'mysql2/promise';
 
@@ -14,7 +14,7 @@ export class PaymentService {
     payinfo: any,
     paytype: 'CASH' | 'CARD' | 'POSTPAY',
     payamount: number,
-  ) {
+  ): Promise<{ rescode: '0000' | '0006' | '0007' }> {
     let connection: PoolConnection | null = null;
 
     try {
