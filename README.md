@@ -1,44 +1,70 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 📘 CMS API (NestJS)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+CMS 관리 시스템의 API 서버입니다.  
+NestJS 기반으로 개발되었으며, 인증, 응답 처리, 로깅, 예외 처리 등 주요 라이프사이클을 체계적으로 구성하였습니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🧩 프로젝트 구조 요약
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+| 구성 요소 | 설명 |
+|------------|------|
+| **Framework** | [NestJS](https://nestjs.com/) |
+| **Database** | MySQL (mysql2/promise) |
+| **Language** | TypeScript |
+| **Architecture** | Layered (Controller → Facade → Service → Model) |
+| **Execution Environment** | Node.js 20+, Docker (개발/운영 동일 환경) |
 
-## Node Version
-```angular2html
-18.20.4
+---
+
+## ⚙️ 라이프사이클 개요
+
+요청 → **Guard (JWT 인증)** → **Interceptor 1 (요청/응답 로깅)** → **Controller → Service → Model** → **Interceptor 1 (요청/응답 로깅)** → **Interceptor 2 (응답 변환)** → 응답  
+예외 발생 시 → **Exception Filter (Global)** 처리
+
+
+---
+
+## 🛡️ Guard
+
+### `JwtAuthGuard`
+- 모든 보호된 API에 적용되는 인증 가드입니다.
+- `Authorization` 헤더에서 JWT를 파싱 및 검증합니다.
+- 인증 실패 시 `UnauthorizedException` 발생 → Exception Filter에서 처리됩니다.
+
+**경로 예시:** src/core/guard/jwt-access.guard.ts
+
+
+---
+
+## 🔍 Interceptors
+
+### 1. `ResponseTransformInterceptor`
+- 모든 API 응답을 **일관된 포맷으로 변환**합니다.
+- 컨트롤러의 반환 값을 `{ rescode, message, body }` 구조로 래핑합니다.
+- 성공 응답 기본값:
+  ```json
+  { "rescode": "0000", "message": "success", "body": {} }
+  ```
+**경로 예시:** src/core/interceptor/transform.interceptor.ts
+
+### 2. `CmsLogInterceptor`
+- 요청 및 응답 로그를 DB에 저장
+- API 호출 시간, URL, HTTP 메서드, 요청자, 요청/응답 등을 기록
+- 비즈니스 로직과 분리되어 비동기 처리 및 트랜잭션 독립성을 유지합니다.
+
+**경로 예시:** src/core/http/cms-log.interceptor.ts
+
+## Project setup
+```
+node version 18.20.4
 nvm use 18.20.4
 ```
-
-## Installation
-
 ```bash
 $ yarn install
 ```
 
-## Running the app
+## Compile and run the project
 
 ```bash
 # development
@@ -51,7 +77,7 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## Test
+## Run tests
 
 ```bash
 # unit tests
@@ -63,17 +89,3 @@ $ yarn run test:e2e
 # test coverage
 $ yarn run test:cov
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
