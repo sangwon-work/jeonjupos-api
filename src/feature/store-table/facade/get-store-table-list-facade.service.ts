@@ -18,42 +18,38 @@ export class GetStoreTableListFacadeService {
   async getStoreTableList(
     storepkey: number,
   ): Promise<{ data: { storetableset: StoreTableListVo[] } }> {
-    try {
-      const { storetableset } =
-        await this.getStoreTableByInStoreService.getStoreTableList(storepkey);
+    const { storetableset } =
+      await this.getStoreTableByInStoreService.getStoreTableList(storepkey);
 
-      const storetablelist = storetableset.map(
-        async (storetable: StoreTableListVo) => {
-          // 테이블 주문내역 조회
-          const { orderset } =
-            await this.getStoreTableOrderListService.getOrderList(
-              storetable.storetablepkey,
-            );
+    const storetablelist = storetableset.map(
+      async (storetable: StoreTableListVo) => {
+        // 테이블 주문내역 조회
+        const { orderset } =
+          await this.getStoreTableOrderListService.getOrderList(
+            storetable.storetablepkey,
+          );
 
-          let totalorderprice = 0;
-          let regdate = '';
-          const orderlist = orderset.map((order: StoreTableOrderListVo) => {
-            totalorderprice += order.saleprice * order.ordercount;
-            const orderregdate = new Date(order.regdate);
-            orderregdate.setHours(orderregdate.getHours() + 9);
-            regdate = `${orderregdate.getHours()}:${orderregdate.getMinutes()}:${orderregdate.getSeconds()}`;
-            return {
-              foodname: order.foodname,
-              ordercount: order.ordercount,
-            };
-          });
+        let totalorderprice = 0;
+        let regdate = '';
+        const orderlist = orderset.map((order: StoreTableOrderListVo) => {
+          totalorderprice += order.saleprice * order.ordercount;
+          const orderregdate = new Date(order.regdate);
+          orderregdate.setHours(orderregdate.getHours() + 9);
+          regdate = `${orderregdate.getHours()}:${orderregdate.getMinutes()}:${orderregdate.getSeconds()}`;
           return {
-            ...storetable,
-            totalorderprice: totalorderprice,
-            regdate: regdate,
-            orderlist: orderlist,
+            foodname: order.foodname,
+            ordercount: order.ordercount,
           };
-        },
-      );
+        });
+        return {
+          ...storetable,
+          totalorderprice: totalorderprice,
+          regdate: regdate,
+          orderlist: orderlist,
+        };
+      },
+    );
 
-      return { data: { storetableset: await Promise.all(storetablelist) } };
-    } catch (err) {
-      throw err;
-    }
+    return { data: { storetableset: await Promise.all(storetablelist) } };
   }
 }

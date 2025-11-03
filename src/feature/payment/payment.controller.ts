@@ -1,44 +1,22 @@
-import {
-  Controller,
-  Req,
-  Res,
-  Request,
-  Response,
-  Post,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
-import { ResponseUtil } from '../../shared/response/response.util';
+import { Controller, Post, Body, UseGuards, HttpCode } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PaymentDto } from './dto/payment.dto';
 import { PaymentFacadeService } from './facade/payment-facade.service';
+import { respond } from '../../shared/utils/response/response';
 
 @Controller('payment')
 export class PaymentController {
-  constructor(
-    private readonly responseUtil: ResponseUtil,
-    private readonly paymentFacadeService: PaymentFacadeService,
-  ) {}
+  constructor(private readonly paymentFacadeService: PaymentFacadeService) {}
 
   /**
    * 결제
-   * @param req
-   * @param res
    * @param paymentDto
    */
   @Post('')
+  @HttpCode(200)
   @UseGuards(AuthGuard('access'))
-  async cashPayment(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() paymentDto: PaymentDto,
-  ) {
-    try {
-      const { storepkey } = req['user'];
-      const { rescode } = await this.paymentFacadeService.payment(paymentDto);
-      return this.responseUtil.response(res, 200, rescode, '', {});
-    } catch (err) {
-      return this.responseUtil.response(res, 500, '9999', '', {});
-    }
+  async cashPayment(@Body() paymentDto: PaymentDto) {
+    const { rescode } = await this.paymentFacadeService.payment(paymentDto);
+    return respond(rescode, '', {});
   }
 }

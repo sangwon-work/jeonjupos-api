@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../shared/database/database.service';
+import { DatabaseService } from '../../core/database/database.service';
 import { PoolConnection } from 'mysql2/promise';
 
 @Injectable()
