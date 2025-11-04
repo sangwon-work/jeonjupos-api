@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import { Logger } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
 import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -57,10 +56,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const PORT = configService.get('SERVER_PORT');
   await app.listen(PORT || 3000);
-
+  console.log(`✅ ${process.env.HOSTNAME} is running on port ${PORT}`);
   // 개발 환경에서 실행했을때 logger 찍기
-  if (configService.get('NODE_ENV') === 'development') {
-    Logger.log(`Application running on port ${PORT}, http://localhost:${PORT}`);
-  }
+  // if (configService.get('NODE_ENV') === 'development') {
+  //   Logger.log(`Application running on port ${PORT}, http://localhost:${PORT}`);
+  // }
 }
 bootstrap();

@@ -7,6 +7,7 @@ export class AppController {
 
   @Get()
   getHello(): string {
+    console.log(`✅ ${process.env.HOSTNAME} is running`);
     return this.appService.getHello();
   }
 }
